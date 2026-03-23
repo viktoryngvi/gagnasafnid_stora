@@ -12,8 +12,7 @@ CREATE TABLE notandi (
 
 CREATE TABLE orku_stodvar_eigandi(    --stod er að ná í þetta
     ID              PRIMARY KEY,
-    heiti_eigandans VARCHAR,
-    heiti_stodvar   VARCHAR NOT NULL,  --eigandi í orku_einingar
+    heiti_eigandans VARCHAR,  --eigandi í orku_einingar 
 );     --þetta er þjónustufyrirtækið
 
 CREATE TABLE stod ( 
