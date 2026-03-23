@@ -56,6 +56,36 @@ ORDER BY
     "Power_Plant_Source" ASC, 
     "Month" ASC, 
     "Customer_name" ASC
-LIMIT 10;
+LIMIT 50;
 
 -- 3. Query 
+
+CREATE VIEW monthly_plant_loss_ratio AS
+SELECT 
+    M.eining_heiti AS "Power_Plant_Source",
+    (SUM(CASE WHEN M.tegund_maelingar = 'Framleiðsla' THEN M.gildi_kwh ELSE 0 END) 
+      - 
+     SUM(CASE WHEN M.tegund_maelingar = 'Innmötun' THEN M.gildi_kwh ELSE 0 END))
+      / 
+    NULLIF(
+        SUM(CASE WHEN M.tegund_maelingar = 'Framleiðsla' THEN M.gildi_kwh ELSE 0 END), 
+        0
+    ) AS "Plant_To_Sub_loss_Ratio",
+
+    (SUM(CASE WHEN M.tegund_maelingar = 'Framleiðsla' THEN M.gildi_kwh ELSE 0 END) 
+      - 
+     SUM(CASE WHEN M.tegund_maelingar = 'Úttekt' THEN M.gildi_kwh ELSE 0 END))
+      / 
+    NULLIF(
+        SUM(CASE WHEN M.tegund_maelingar = 'Framleiðsla' THEN M.gildi_kwh ELSE 0 END), 
+        0
+    ) AS "Total_System_Loss_Ratio"
+FROM raforka_legacy.orku_maelingar M
+GROUP BY 
+    M.eining_heiti,
+    EXTRACT(MONTH FROM timi)
+
+SELECT "Power_Plant_Source", AVG("Plant_To_Sub_loss_Ratio"), AVG("Total_System_Loss_Ratio")
+FROM monthly_plant_loss_ratio
+GROUP BY "Power_Plant_Source"
+ORDER BY "Power_Plant_Source"
