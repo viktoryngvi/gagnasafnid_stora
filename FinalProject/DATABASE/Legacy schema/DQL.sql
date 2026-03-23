@@ -35,10 +35,9 @@ ORDER BY
     "Power_Plant_Source" ASC, 
     "Month" ASC, 
     "Total_kWh" DESC
-LIMIT 60;
+
 
 -- 2. Query SEMI SEMI 
-
 SELECT 
     M.eining_heiti AS "Power_Plant_Source",
     EXTRACT(YEAR FROM timi) AS "Year",
@@ -56,10 +55,9 @@ ORDER BY
     "Power_Plant_Source" ASC, 
     "Month" ASC, 
     "Customer_name" ASC
-LIMIT 50;
+
 
 -- 3. Query 
-
 CREATE VIEW monthly_plant_loss_ratio AS
 SELECT 
     M.eining_heiti AS "Power_Plant_Source",
