@@ -1,9 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-USER = ""
+USER = "postgres"
 PASSWORD = ""
-PORT = ""
+PORT = "5432"
 DATABASE_NAME = "lokverksql"
 
 # Database connection string
