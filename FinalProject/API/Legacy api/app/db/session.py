@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 USER = "postgres"
-PASSWORD = ""
+PASSWORD = "postgres"
 PORT = "5432"
 DATABASE_NAME = "lokverksql"
 
