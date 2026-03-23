@@ -171,23 +171,22 @@ Service 1: get_monthly_energy_flow_data()
 def get_monthly_energy_flow_data(db: Session, from_date: datetime, to_date: datetime):
     query = text("""
         SELECT 
-            M.eining_heiti AS "Power_Plant_Source",
-            EXTRACT(YEAR FROM timi) AS "Year",
-            EXTRACT(MONTH FROM timi) AS "Month",
-            M.tegund_maelingar "Type",
-            SUM(M.gildi_kwh) AS "Total_kWh"
+            M.eining_heiti AS "power_plant_source",
+            EXTRACT(YEAR FROM timi) AS "year",
+            EXTRACT(MONTH FROM timi) AS "month",
+            M.tegund_maelingar "measurement_type",
+            SUM(M.gildi_kwh) AS "total_kwh"
         FROM raforka_legacy.orku_maelingar M
         WHERE timi >= :from_date AND timi <= :to_date
         GROUP BY 
             M.eining_heiti,
-            "Year",
-            "Month",
+            "year",
+            "month",
             M.tegund_maelingar
         ORDER BY 
-            "Power_Plant_Source" ASC, 
-            "Month" ASC, 
-            "Total_kWh" DESC
-        LIMIT 60;
+            "power_plant_source" ASC, 
+            "month" ASC, 
+            "total_kwh" DESC;
     """)
     result = db.execute(query, {"from_date": from_date, "to_date": to_date})
     return [dict(row._mapping) for row in result]
@@ -198,23 +197,22 @@ Service 2: get_monthly_company_usage_data()
 def get_monthly_company_usage_data(db: Session):
     query = text("""
         SELECT 
-            M.eining_heiti AS "Power_Plant_Source",
-            EXTRACT(YEAR FROM timi) AS "Year",
-            EXTRACT(MONTH FROM timi) AS "Month",
-            M.notandi_heiti AS "Customer_name",
-            SUM(M.gildi_kwh) AS "Total_kWh"
+            M.eining_heiti AS "power_plant_source",
+            EXTRACT(YEAR FROM timi) AS "year",
+            EXTRACT(MONTH FROM timi) AS "month",
+            M.notandi_heiti AS "customer_name",
+            SUM(M.gildi_kwh) AS "total_kWh"
         FROM raforka_legacy.orku_maelingar M
         WHERE EXTRACT(YEAR FROM timi) = 2025 AND M.notandi_heiti is NOT NULL
         GROUP BY 
             M.eining_heiti,
-            "Year",
-            "Month",
+            "year",
+            "month",
             M.notandi_heiti
         ORDER BY 
-            "Power_Plant_Source" ASC, 
-            "Month" ASC, 
-            "Customer_name" ASC
-        LIMIT 10;    
+            "power_plant_source" ASC, 
+            "month" ASC, 
+            "customer_name" ASC;    
     """)
     result = db.execute(query)
     return [dict(row._mapping)for row in result]
