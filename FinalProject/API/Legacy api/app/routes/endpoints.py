@@ -113,3 +113,9 @@ def get_monthly_company_usage(
 '''
 Endpoint 3: get_monthly_plant_loss_ratios()
 '''
+@router.get("/sub-to-loss-ratio")
+def get_monthly_plant_loss_ratios(
+    db: Session = Depends(get_orkuflaedi_session)
+):
+    print(f"Calling [GET] /{db_name}/sub-to-loss-ratio")
+    return get_monthly_plant_loss_ratios_data(db)
