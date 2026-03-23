@@ -1,5 +1,5 @@
 1. <ins> **Part A:** </ins>
- - <ins>A1</ins>: Setting up the database
+ __- <ins>A1</ins>: Setting up the database__
  - <ins>A2</ins>: Write Dql queries
    - **Querry 1**
    - **Querry 2**
