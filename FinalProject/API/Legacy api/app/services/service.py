@@ -1,5 +1,6 @@
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from app.db.tables.orku_einingar import OrkuEiningar
 from app.models.orku_einingar_model import OrkuEiningarModel
 from app.db.tables.notendur_skraning import NotendurSkraning
@@ -164,15 +165,70 @@ async def insert_test_measurement_data(
         raise HTTPException(status_code=500, detail=str(e))
     
 # Task B2
-
 '''
 Service 1: get_monthly_energy_flow_data()
 '''
+def get_monthly_energy_flow_data(db: Session, from_date: datetime, to_date: datetime):
+    query = text("""
+        SELECT 
+            M.eining_heiti AS "power_plant_source",
+            EXTRACT(YEAR FROM timi) AS "year",
+            EXTRACT(MONTH FROM timi) AS "month",
+            M.tegund_maelingar "measurement_type",
+            SUM(M.gildi_kwh) AS "total_kwh"
+        FROM raforka_legacy.orku_maelingar M
+        WHERE timi >= :from_date AND timi <= :to_date
+        GROUP BY 
+            M.eining_heiti,
+            "year",
+            "month",
+            M.tegund_maelingar
+        ORDER BY 
+            "power_plant_source" ASC, 
+            "month" ASC, 
+            "total_kwh" DESC;
+    """)
+    result = db.execute(query, {"from_date": from_date, "to_date": to_date})
+    return [dict(row._mapping) for row in result]
 
 '''
 Service 2: get_monthly_company_usage_data()
 '''
+def get_monthly_company_usage_data(db: Session):
+    query = text("""
+        SELECT 
+            M.eining_heiti AS "power_plant_source",
+            EXTRACT(YEAR FROM timi) AS "year",
+            EXTRACT(MONTH FROM timi) AS "month",
+            M.notandi_heiti AS "customer_name",
+            SUM(M.gildi_kwh) AS "total_kWh"
+        FROM raforka_legacy.orku_maelingar M
+        WHERE EXTRACT(YEAR FROM timi) = 2025 AND M.notandi_heiti is NOT NULL
+        GROUP BY 
+            M.eining_heiti,
+            "year",
+            "month",
+            M.notandi_heiti
+        ORDER BY 
+            "power_plant_source" ASC, 
+            "month" ASC, 
+            "customer_name" ASC;    
+    """)
+    result = db.execute(query)
+    return [dict(row._mapping)for row in result]
 
 '''
 Service 3: get_monthly_plant_loss_ratios_data()
 '''
+def get_monthly_plant_loss_ratios_data(db: Session):
+    query = text("""
+        SELECT 
+            power_plant_source, 
+            AVG(plant_to_sub_loss_ratio) AS plant_to_sub_loss_ratio,
+            AVG(total_system_loss_ratio) AS total_system_loss_ratio
+        FROM raforka_legacy.monthly_plant_loss_ratio
+        GROUP BY power_plant_source
+        ORDER BY power_plant_source
+    """)
+    result = db.execute(query)
+    return [dict(row._mapping) for row in result]

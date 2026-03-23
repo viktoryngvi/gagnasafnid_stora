@@ -3,7 +3,7 @@
 CREATE TABLE notandi (
     ID          PRIMARY KEY,
     heiti       VARCHAR NOT NULL,
-    kennitala   INT NOT NULL,
+    kennitala   INT NOT NULL UNIQUE,
     eigandi     VARCHAR NOT NULL,
     skranning   DATE NOT NULL   -- ar_stofnað í notendur_skranning
     X_HNIT      DOUBLE PRECISION,
