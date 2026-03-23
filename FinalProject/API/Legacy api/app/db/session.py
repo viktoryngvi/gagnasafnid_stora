@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 USER = ""
 PASSWORD = ""
 PORT = ""
-DATABASE_NAME = ""
+DATABASE_NAME = "lokverksql"
 
 # Database connection string
 DATABASE_URL = f"postgresql://{USER}:{PASSWORD}@localhost:{PORT}/{DATABASE_NAME}"
