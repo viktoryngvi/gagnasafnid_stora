@@ -3,7 +3,7 @@
 CREATE TABLE notandi (
     ID          PRIMARY KEY,
     heiti       VARCHAR NOT NULL,
-    kennitala   INT NOT NULL,
+    kennitala   INT NOT NULL UNIQUE,
     eigandi     VARCHAR NOT NULL,
     skranning   DATE NOT NULL   -- ar_stofnað í notendur_skranning
     --þarf að hafa x og y hnit??
@@ -12,7 +12,6 @@ CREATE TABLE notandi (
 CREATE TABLE orku_stodvar_eigandi(    --stod er að ná í þetta
     ID              PRIMARY KEY,
     nafn            VARCHAR NOT NULL,  --heiti í orku_einingar
-    heiti_stodvar   VARCHAR NOT NULL,  --eigandi í orku_einingar
 );     --þetta er þjónustufyrirtækið
 
 CREATE TABLE stod ( 
@@ -35,11 +34,11 @@ CREATE TABLE tengdar_stodvar (
 CREATE TABLE orku_einingar(
     eigandi_ID          INT,
     skranning           DATE NOT NULL,
-    tegund_stod_ID         VARCHAR NOT NULL,
+    tegund_stod_ID      INT,
     X_HNIT              DOUBLE PRECISION,
     Y_HNIT              DOUBLE PRECISION,
     FOREIGN KEY(eigandi_ID) REFERENCES orku_stodvar_eigandi(ID),
-    FOREIGN KEY(eigandi_skranninar) REFERENCES notandi(ID),
+    -- FOREIGN KEY(eigandi_skranninar) REFERENCES notandi(ID),
     FOREIGN KEY(tegund_stod_ID) REFERENCES stod(ID)
 );
 
