@@ -8,6 +8,8 @@
  - <ins>Task B1:</ins>: Setting up the Api
  - <ins>Task 2</ins>: Expose the querries to the API
    - **Querry 1**
+   - **Query 2**
+   - **Query 3**
 3.  <ins> **Part C:** </ins>
  - <ins>Task C1 </ins>: Improve the database design
  - <ins>Task C2 </ins>: Draw an ER diagram
