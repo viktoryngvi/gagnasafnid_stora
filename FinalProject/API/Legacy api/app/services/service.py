@@ -222,3 +222,5 @@ def get_monthly_company_usage_data(db: Session):
 '''
 Service 3: get_monthly_plant_loss_ratios_data()
 '''
+def get_monthly_plant_loss_ratios_data(db: Session):
+    return []
