@@ -1,5 +1,6 @@
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from app.db.tables.orku_einingar import OrkuEiningar
 from app.models.orku_einingar_model import OrkuEiningarModel
 from app.db.tables.notendur_skraning import NotendurSkraning
@@ -164,15 +165,62 @@ async def insert_test_measurement_data(
         raise HTTPException(status_code=500, detail=str(e))
     
 # Task B2
-
 '''
 Service 1: get_monthly_energy_flow_data()
 '''
+def get_monthly_energy_flow_data(db: Session):
+    query = text("""
+        SELECT 
+            M.eining_heiti AS "Power_Plant_Source",
+            EXTRACT(YEAR FROM timi) AS "Year",
+            EXTRACT(MONTH FROM timi) AS "Month",
+            M.tegund_maelingar "Type",
+            SUM(M.gildi_kwh) AS "Total_kWh"
+        FROM raforka_legacy.orku_maelingar M
+        WHERE EXTRACT(YEAR FROM timi) = 2025
+        GROUP BY 
+            M.eining_heiti,
+            "Year",
+            "Month",
+            M.tegund_maelingar
+        ORDER BY 
+            "Power_Plant_Source" ASC, 
+            "Month" ASC, 
+            "Total_kWh" DESC
+        LIMIT 60;
+    """)
+    result = db.execute(query)
+    return [dict(row._mapping) for row in result]
 
 '''
 Service 2: get_monthly_company_usage_data()
 '''
+def get_monthly_company_usage_data(db: Session):
+    query = text("""
+        SELECT 
+            M.eining_heiti AS "Power_Plant_Source",
+            EXTRACT(YEAR FROM timi) AS "Year",
+            EXTRACT(MONTH FROM timi) AS "Month",
+            M.notandi_heiti AS "Customer_name",
+            SUM(M.gildi_kwh) AS "Total_kWh"
+        FROM raforka_legacy.orku_maelingar M
+        WHERE EXTRACT(YEAR FROM timi) = 2025 AND M.notandi_heiti is NOT NULL
+        GROUP BY 
+            M.eining_heiti,
+            "Year",
+            "Month",
+            M.notandi_heiti
+        ORDER BY 
+            "Power_Plant_Source" ASC, 
+            "Month" ASC, 
+            "Customer_name" ASC
+        LIMIT 10;    
+    """)
+    result = db.execute(query)
+    return [dict(row._mapping)for row in result]
 
 '''
 Service 3: get_monthly_plant_loss_ratios_data()
 '''
+def get_monthly_plant_loss_ratios_data(db: Session):
+    return []
