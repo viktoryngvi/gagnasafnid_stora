@@ -6,3 +6,6 @@ class MonthlyPlantEnergyFlowModel(BaseModel):
     year: int
     month: int
     total_kwh: float
+
+    class Config:
+        from_attributes = True

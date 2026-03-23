@@ -168,7 +168,7 @@ async def insert_test_measurement_data(
 '''
 Service 1: get_monthly_energy_flow_data()
 '''
-def get_monthly_energy_flow_data(db: Session):
+def get_monthly_energy_flow_data(db: Session, from_date: datetime, to_date: datetime):
     query = text("""
         SELECT 
             M.eining_heiti AS "Power_Plant_Source",
@@ -177,7 +177,7 @@ def get_monthly_energy_flow_data(db: Session):
             M.tegund_maelingar "Type",
             SUM(M.gildi_kwh) AS "Total_kWh"
         FROM raforka_legacy.orku_maelingar M
-        WHERE EXTRACT(YEAR FROM timi) = 2025
+        WHERE timi >= :from_date AND timi <= :to_date
         GROUP BY 
             M.eining_heiti,
             "Year",
@@ -189,7 +189,7 @@ def get_monthly_energy_flow_data(db: Session):
             "Total_kWh" DESC
         LIMIT 60;
     """)
-    result = db.execute(query)
+    result = db.execute(query, {"from_date": from_date, "to_date": to_date})
     return [dict(row._mapping) for row in result]
 
 '''
