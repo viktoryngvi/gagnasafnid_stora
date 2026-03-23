@@ -88,7 +88,11 @@ GROUP BY
 SELECT "Power_Plant_Source", AVG("Plant_To_Sub_loss_Ratio"), AVG("Total_System_Loss_Ratio")
 FROM monthly_plant_loss_ratio
 GROUP BY "Power_Plant_Source"
+<<<<<<< Daníel
+ORDER BY "Power_Plant_Source"
+=======
 ORDER BY "Power_Plant_Source"
 
 
 
+>>>>>>> main
