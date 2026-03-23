@@ -6,20 +6,23 @@ CREATE TABLE notandi (
     kennitala   INT NOT NULL UNIQUE,
     eigandi     VARCHAR NOT NULL,
     skranning   DATE NOT NULL   -- ar_stofnað í notendur_skranning
-    --þarf að hafa x og y hnit??
+    X_HNIT      DOUBLE PRECISION,
+    Y_HNIT      DOUBLE PRECISION,
 );    --þetta er fyrirtæki sem er að nota þjónustuna
 
 CREATE TABLE orku_stodvar_eigandi(    --stod er að ná í þetta
     ID              PRIMARY KEY,
-    nafn            VARCHAR NOT NULL,  --heiti í orku_einingar
+    heiti_eigandans VARCHAR,  --eigandi í orku_einingar 
 );     --þetta er þjónustufyrirtækið
 
 CREATE TABLE stod ( 
-    ID              PRIMARY KEY,
-    heiti           VARCHAR NOT NULL,
-    eigandi_ID      INT,
+    ID                  PRIMARY KEY,
+    heiti               VARCHAR NOT NULL, -- heiti í orku einingar??
+    eigandi_ID          INT,
     hvort_dat_se_stod   VARCHAR,   --þarf annað nafn
-    tegund          VARCHAR NOT NULL,
+    tegund              VARCHAR NOT NULL,
+    -- X_HNIT              DOUBLE PRECISION,
+    -- Y_HNIT              DOUBLE PRECISION,   --þarf annað hvort að vera hér eða í orku_einingum
     FOREIGN KEY(eigandi_ID) REFERENCES orku_stodvar_eigandi(ID)
 );
 
@@ -32,13 +35,10 @@ CREATE TABLE tengdar_stodvar (
 
 
 CREATE TABLE orku_einingar(
-    eigandi_ID          INT,
-    skranning           DATE NOT NULL,
     tegund_stod_ID      INT,
-    X_HNIT              DOUBLE PRECISION,
-    Y_HNIT              DOUBLE PRECISION,
-    FOREIGN KEY(eigandi_ID) REFERENCES orku_stodvar_eigandi(ID),
-    -- FOREIGN KEY(eigandi_skranninar) REFERENCES notandi(ID),
+    skranning           DATE NOT NULL, -- dagsetning
+    -- X_HNIT              DOUBLE PRECISION,
+    -- Y_HNIT              DOUBLE PRECISION,   --þarf annað hvort að vera hér eða í orku_einingum
     FOREIGN KEY(tegund_stod_ID) REFERENCES stod(ID)
 );
 
@@ -51,10 +51,10 @@ CREATE TABLE orku_maelingar(
     sendandi_maelingar      INT,  -- þjónustufyrirtæki
     tegund_maelingar        VARCHAR NOT NULL,
     gildi_kwh               NUMERIC NOT NULL,
-    stadsetning_maelingar   INT,
+    STOD_ID                 INT,
     FOREIGN KEY(notandi) REFERENCES notandi(ID),
     FOREIGN KEY(sendandi_maelingar) REFERENCES orku_stodvar_eigandi(ID),
-    FOREIGN KEY(stadsetning_maelingar) REFERENCES orku_stodvar_eigandi(ID)
+    FOREIGN KEY(STOD_ID) REFERENCES stod(ID)  --auka dót til að skrá hvaða stöð er með orku
 );
 
 
