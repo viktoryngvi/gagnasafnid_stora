@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, UploadFile, File, Form
 from app.db.session import get_orkuflaedi_session
 from app.models.monthly_energy_flow_model import MonthlyPlantEnergyFlowModel
+from app.models.monthly_plant_loss_ratios import MonthlyPlantLossRatiosModel
 from sqlalchemy.orm import Session
 from app.services.service import (
     get_orku_einingar_data,
@@ -113,7 +114,7 @@ def get_monthly_company_usage(
 '''
 Endpoint 3: get_monthly_plant_loss_ratios()
 '''
-@router.get("/sub-to-loss-ratio")
+@router.get("/sub-to-loss-ratio", response_model=List[MonthlyPlantLossRatiosModel])
 def get_monthly_plant_loss_ratios(
     db: Session = Depends(get_orkuflaedi_session)
 ):

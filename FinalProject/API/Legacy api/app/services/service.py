@@ -223,12 +223,12 @@ Service 3: get_monthly_plant_loss_ratios_data()
 def get_monthly_plant_loss_ratios_data(db: Session):
     query = text("""
         SELECT 
-            power_plant_source, 
-            AVG(plant_to_sub_loss_ratio) AS plant_to_sub_loss_ratio,
-            AVG(total_system_loss_ratio) AS total_system_loss_ratio
-        FROM raforka_legacy.monthly_plant_loss_ratio
-        GROUP BY power_plant_source
-        ORDER BY power_plant_source
+            "Power_Plant_Source" AS power_plant_source,
+            AVG("Plant_To_Sub_loss_Ratio") AS plant_to_substation_loss_ratio,
+            AVG("Total_System_Loss_Ratio") AS total_system_loss_ratio
+        FROM monthly_plant_loss_ratio
+        GROUP BY "Power_Plant_Source"
+        ORDER BY "Power_Plant_Source"
     """)
     result = db.execute(query)
     return [dict(row._mapping) for row in result]
