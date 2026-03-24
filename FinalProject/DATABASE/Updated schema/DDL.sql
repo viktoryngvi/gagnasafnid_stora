@@ -49,7 +49,7 @@ CREATE TABLE orku_maelingar(
     gildi_kwh               NUMERIC NOT NULL,
     FOREIGN KEY(notandi) REFERENCES notandi(ID),
     FOREIGN KEY(STOD_ID) REFERENCES stod(ID)  --auka dót til að skrá hvaða stöð er með orku og eigandann
-);
+);     -- fyrst að orku_mælingin þarf orku_stoðvar_eigandann er það þá ekki transitive dependancy?
 
 
 
