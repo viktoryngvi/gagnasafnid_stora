@@ -17,7 +17,7 @@ CREATE TABLE orku_stodvar_eigandi(    --stod er að ná í þetta
 
 CREATE TABLE stod ( 
     ID                  PRIMARY KEY,
-    heiti               VARCHAR NOT NULL, -- heiti í orku einingar??
+    stadur              VARCHAR NOT NULL, -- heiti í orku einingar??
     eigandi_ID          INT,
     hvort_dat_se_stod   VARCHAR,   --þarf annað nafn
     tegund              VARCHAR NOT NULL,
@@ -36,9 +36,10 @@ CREATE TABLE tengdar_stodvar (
 
 CREATE TABLE orku_einingar(
     tegund_stod_ID      INT,
-    skranning           DATE NOT NULL, -- dagsetning
+    skranning           DATETIME NOT NULL, -- dagsetning
     -- X_HNIT              DOUBLE PRECISION,
     -- Y_HNIT              DOUBLE PRECISION,   --þarf annað hvort að vera hér eða í orku_einingum
+    PRIMARY KEY(tegund_maelingar, skranning)
     FOREIGN KEY(tegund_stod_ID) REFERENCES stod(ID)
 );
 
@@ -47,7 +48,7 @@ CREATE TABLE orku_einingar(
 CREATE TABLE orku_maelingar(
     ID                      PRIMARY KEY,
     notandi                 INT,     -- notandi fyrirtæki
-    date_og_timi            DATETIME NOT NULL,
+    date_og_timi            DATETIME ,
     sendandi_maelingar      INT,  -- þjónustufyrirtæki
     tegund_maelingar        VARCHAR NOT NULL,
     gildi_kwh               NUMERIC NOT NULL,
@@ -55,6 +56,7 @@ CREATE TABLE orku_maelingar(
     FOREIGN KEY(notandi) REFERENCES notandi(ID),
     FOREIGN KEY(sendandi_maelingar) REFERENCES orku_stodvar_eigandi(ID),
     FOREIGN KEY(STOD_ID) REFERENCES stod(ID)  --auka dót til að skrá hvaða stöð er með orku
+    FOREIGN KEY(date_og_timi) REFERENCES orku_einingar(skranning)
 );
 
 
