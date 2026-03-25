@@ -14,6 +14,7 @@ CREATE TABLE hnit (
 CREATE TABLE orku(
     ID          INT PRIMARY KEY AUTO_INCREMENT,
     stadur      VARCHAR NOT NULL,
+    dagur_uppsett DATE NOT NULL,
     hnit_id     INT NOT NULL,
     stodvar_id  INT NOT NULL,
     FOREIGN KEY(hnit_id) REFERENCES hnit(ID),
