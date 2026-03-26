@@ -53,10 +53,19 @@ CREATE TABLE notandi (
 CREATE TABLE maeling(
     ID                  SERIAL PRIMARY KEY,
     orku_ID             INT,
-    sendandi_maelingar  INT,
+    -- sendandi_maelingar 
+    sendandi_orku_id    INT REFERENCES orku(ID),
+    sendandi_eigandi_id INT REFERENCES orku_stodvar_eigandi(ID),
+
     tegund_maelingar    VARCHAR NOT NULL,
     FOREIGN KEY (orku_ID) REFERENCES orku(ID)
+
+    CONSTRAINT exclusive_sender CHECK (
+        (sendandi_orku_id IS NOT NULL AND sendandi_eigandi_id IS NULL) OR
+        (sendandi_orku_id IS NULL AND sendandi_eigandi_id IS NOT NULL)
+    )
 );
+
 
 CREATE TABLE gildin(
     ID              SERIAL PRIMARY KEY,
@@ -67,15 +76,14 @@ CREATE TABLE gildin(
     FOREIGN KEY (notandi_ID) REFERENCES notandi(ID)
     FOREIGN KEY (maeling_ID) REFERENCES maeling(ID)
 );
-
-CREATE TABLE new_one(
-    ID          INT,
-    orku_ID     INT,
-    sendandi_maelingar  INT,
-    tegund_maelingar    VARCHAR,
-    FOREIGN KEY (orku_ID) REFERENCES orku(ID)
-    FOREIGN KEY (sendandi_maelingar) REFERENCES something(ID)
-);
+-- CREATE TABLE new_one(
+--     ID          INT,
+--     orku_ID     INT,
+--     sendandi_maelingar  INT,
+--     tegund_maelingar    VARCHAR,
+--     FOREIGN KEY (orku_ID) REFERENCES orku(ID)
+--     FOREIGN KEY (sendandi_maelingar) REFERENCES something(ID)
+-- );
 
 
 
