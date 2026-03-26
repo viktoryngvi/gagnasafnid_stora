@@ -1,81 +1,72 @@
 -- Task C3
 
-CREATE TABLE notandi (
-    ID          PRIMARY KEY,
-    heiti       VARCHAR NOT NULL,
-    kennitala   INT NOT NULL UNIQUE,
-    eigandi     VARCHAR NOT NULL,
-    skranning   DATE NOT NULL   -- ar_stofnað í notendur_skranning
-    --þarf að hafa x og y hnit??
-);    --þetta er fyrirtæki sem er að nota þjónustuna
-
 CREATE TABLE orku_stodvar_eigandi(    --stod er að ná í þetta
-    ID              PRIMARY KEY,
-    nafn            VARCHAR NOT NULL,  --heiti í orku_einingar
-);     --þetta er þjónustufyrirtækið
+    ID              PRIMARY KEY SERIAL,
+    heiti_eigandans VARCHAR,--eigandi í orku_einingar
+);     --þetta er þjónustufyrirtækiðCREATE VIEW monthly_plant_loss_ratio AS
+
+CREATE TABLE hnit (
+    ID          PRIMARY KEY SERIAL,
+    X_HNIT      DOUBLE PRECISION,
+    Y_HNIT      DOUBLE PRECISION
+);
+
+CREATE TABLE orku(
+    ID                  INT PRIMARY KEY SERIAL,
+    stadur              VARCHAR NOT NULL UNIQUE,
+    dagsetning_uppsett  DATE NOT NULL,
+    hnit_id             INT NOT NULL,
+    stodvar_id          INT NOT NULL,
+    FOREIGN KEY(hnit_id) REFERENCES hnit(ID),
+    FOREIGN KEY(stodvar_id) REFERENCES orku_stodvar_eigandi(ID)
+);
+
+CREATE TABLE virkjun(
+    ID          INT PRIMARY KEY REFERENCES orku(ID),
+    tegund      VARCHAR NOT NULL
+);
 
 CREATE TABLE stod ( 
-    ID              PRIMARY KEY,
-    heiti           VARCHAR NOT NULL,
-    eigandi_ID      INT,
-    hvort_dat_se_stod   VARCHAR,   --þarf annað nafn
-    tegund          VARCHAR NOT NULL,
-    FOREIGN KEY(eigandi_ID) REFERENCES orku_stodvar_eigandi(ID)
+    ID          INT PRIMARY KEY REFERENCES orku(ID),
+    tegund      VARCHAR NOT NULL
 );
 
 CREATE TABLE tengdar_stodvar (
-    STOD1_ID,
-    STOD2_ID,
-    FOREIGN KEY(STOD1_ID) REFERENCES stod(ID),
-    FOREIGN KEY(STOD2_ID) REFERENCES stod(ID)
+    STOD1        VARCHAR,
+    STOD2        VARCHAR,
+    PRIMARY KEY(STOD1, STOD2),
+    FOREIGN KEY(STOD1) REFERENCES orku(stadur),
+    FOREIGN KEY(STOD2) REFERENCES orku(stadur)
 );
 
+CREATE TABLE notandi (
+    ID          PRIMARY KEY SERIAL,
+    hnit_id     INT,    --KEY
+    stadsetning VARCHAR NOT NULL,   --heiti
+    kennitala   VARCHAR NOT NULL UNIQUE,
+    eigandi     VARCHAR NOT NULL,
+    ar_stofnad  VARCHAR NOT NULL,   --ar_stofnað í notendur_skranning
+    FOREIGN KEY(hnit_id) REFERENCES hnit(ID)
+);    --þetta er fyrirtæki sem er að nota þjónustuna
 
-CREATE TABLE orku_einingar(
-    eigandi_ID          INT,
-    skranning           DATE NOT NULL,
-    tegund_stod_ID      INT,
-    X_HNIT              DOUBLE PRECISION,
-    Y_HNIT              DOUBLE PRECISION,
-    FOREIGN KEY(eigandi_ID) REFERENCES orku_stodvar_eigandi(ID),
-    -- FOREIGN KEY(eigandi_skranninar) REFERENCES notandi(ID),
-    FOREIGN KEY(tegund_stod_ID) REFERENCES stod(ID)
+
+CREATE TABLE maeling(
+    ID                  PRIMARY KEY SERIAL,
+    orku_ID             INT,
+    sendandi_maelingar  VARCHAR NOT NULL,
+    tegund_maelingar    VARCHAR NOT NULL,
+    timi                TIMESTAMP NOT NULL,
+    FOREIGN KEY (orku_ID) REFERENCES orku(ID)
 );
 
-
-
-CREATE TABLE orku_maelingar(
-    ID                      PRIMARY KEY,
-    notandi                 INT,     -- notandi fyrirtæki
-    date_og_timi            DATETIME NOT NULL,
-    sendandi_maelingar      INT,  -- þjónustufyrirtæki
-    tegund_maelingar        VARCHAR NOT NULL,
-    gildi_kwh               NUMERIC NOT NULL,
-    stadsetning_maelingar   INT,
-    FOREIGN KEY(notandi) REFERENCES notandi(ID),
-    FOREIGN KEY(sendandi_maelingar) REFERENCES orku_stodvar_eigandi(ID),
-    FOREIGN KEY(stadsetning_maelingar) REFERENCES orku_stodvar_eigandi(ID)
+CREATE TABLE gildin(
+    ID              PRIMARY KEY SERIAL,
+    maeling_ID      INT,
+    notandi_ID      INT NULL,
+    gildi_kwh       NUMERIC NOT NULL,
+    FOREIGN KEY (notandi_ID) REFERENCES notandi(ID)
+    FOREIGN KEY (maeling_ID) REFERENCES maeling(ID)
 );
-
-
-SELECT eining_heiti
-FROM raforka_legacy.orku_maelingar
-LIMIT 60;
-
-SELECT heiti, eigandi
-FROM raforka_legacy.notendur_skraning; 
--- notandi fyrirtæki
-
-SELECT heiti, eigandi, tegund, tegund_stod, tengd_stod
-FROM raforka_legacy.orku_einingar;
---þjónustufyrirtækin sjálf
-
-
-
-
-
-
-
 
 
 -- Task D1
