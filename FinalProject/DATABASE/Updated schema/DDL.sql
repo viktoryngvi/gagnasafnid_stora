@@ -65,8 +65,8 @@ CREATE TABLE maeling(
     UNIQUE (orku_ID, sendandi, tegund_maelingar)
 
     CONSTRAINT exclusive_sender CHECK (
-        (sendandi_orku_id IS NOT NULL AND sendandi_eigandi_id IS NULL) OR
-        (sendandi_orku_id IS NULL AND sendandi_eigandi_id IS NOT NULL))
+        (sendandi_orku_id IS NOT 0 AND sendandi_eigandi_id IS 0) OR
+        (sendandi_orku_id IS 0 AND sendandi_eigandi_id IS NOT 0))
 );
 
 
@@ -95,6 +95,15 @@ LIMIT 1000;
 SELECT *
 FROM maeling
 LIMIT 1000;
+
+
+SELECT 
+    CASE WHEN sendandi_orku_id IS NULL THEN 0 
+        ELSE sendandi_orku_id 
+    END
+FROM maeling;
+
+
 
 SELECT *
 FROM notandi
