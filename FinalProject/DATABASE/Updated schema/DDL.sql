@@ -2,7 +2,7 @@
 
 CREATE TABLE orku_stodvar_eigandi(    --stod er að ná í þetta
     ID              SERIAL PRIMARY KEY,
-    heiti_eigandans VARCHAR,--eigandi í orku_einingar
+    heiti_eigandans VARCHAR UNIQUE,--eigandi í orku_einingar
 );     --þetta er þjónustufyrirtækiðCREATE VIEW monthly_plant_loss_ratio AS
 
 CREATE TABLE hnit (
@@ -52,19 +52,23 @@ CREATE TABLE notandi (
 
 CREATE TABLE maeling(
     ID                  SERIAL PRIMARY KEY,
-    orku_ID             INT,
-    -- sendandi_maelingar 
-    sendandi_orku_id    INT REFERENCES orku(ID),
-    sendandi_eigandi_id INT REFERENCES orku_stodvar_eigandi(ID),
-
+    orku_ID             INT,    -- sendandi_maelingar 
+    sendandi_orku_id    INT,
+    sendandi_eigandi_id INT,
     tegund_maelingar    VARCHAR NOT NULL,
-    FOREIGN KEY (orku_ID) REFERENCES orku(ID)
+    FOREIGN KEY (orku_ID) REFERENCES orku(ID),
+    FOREIGN KEY (sendandi_orku_id) REFERENCES orku(ID),
+    FOREIGN KEY (sendandi_eigandi_id) REFERENCES orku_stodvar_eigandi(ID),
+    sendandi VARCHAR GENERATED ALWAYS AS (
+        (CASE WHEN sendandi_orku_id IS NOT NULL THEN 's' || sendandi_orku_id
+        WHEN sendandi_eigandi_id IS NOT NULL THEN 'e' || sendandi_eigandi_id END)) STORED,
+    UNIQUE (orku_ID, sendandi, tegund_maelingar)
 
     CONSTRAINT exclusive_sender CHECK (
         (sendandi_orku_id IS NOT NULL AND sendandi_eigandi_id IS NULL) OR
-        (sendandi_orku_id IS NULL AND sendandi_eigandi_id IS NOT NULL)
-    )
+        (sendandi_orku_id IS NULL AND sendandi_eigandi_id IS NOT NULL))
 );
+
 
 
 CREATE TABLE gildin(
@@ -76,59 +80,6 @@ CREATE TABLE gildin(
     FOREIGN KEY (notandi_ID) REFERENCES notandi(ID)
     FOREIGN KEY (maeling_ID) REFERENCES maeling(ID)
 );
--- CREATE TABLE new_one(
---     ID          INT,
---     orku_ID     INT,
---     sendandi_maelingar  INT,
---     tegund_maelingar    VARCHAR,
---     FOREIGN KEY (orku_ID) REFERENCES orku(ID)
---     FOREIGN KEY (sendandi_maelingar) REFERENCES something(ID)
--- );
-
-
-
--- CREATE TABLE maeling_sendandi (
---     ID SERIAL PRIMARY KEY,
---     sendanda_tegund VARCHAR NOT NULL CHECK (sendanda_tegund IN ('ORKA', 'EIGANDI'))
--- );
--- CREATE TABLE orku_stodvar_eigandi (
---     ID INT PRIMARY KEY REFERENCES maeling_sendandi(ID),
---     heiti_eigandans VARCHAR
--- );
-
--- CREATE TABLE orku (
---     ID INT PRIMARY KEY REFERENCES maeling_sendandi(ID),
---     stadur VARCHAR NOT NULL UNIQUE,
---     dagsetning_uppsett DATE NOT NULL,
---     hnit_id INT NOT NULL REFERENCES hnit(ID),
---     stodvar_id INT NOT NULL REFERENCES orku_stodvar_eigandi(ID)
--- );
-
-
--- CREATE TABLE maeling (
---     ID                  SERIAL PRIMARY KEY,
---     orku_ID             INT REFERENCES orku(ID),
-
---     -- Two specific foreign keys
---     sender_orku_id      INT REFERENCES orku(ID),
---     sender_eigandi_id   INT REFERENCES orku_stodvar_eigandi(ID),
-
---     tegund_maelingar    VARCHAR NOT NULL,
-
---     -- This constraint ensures you can't have both or neither
---     CONSTRAINT logical_sender CHECK (
---         (sender_orku_id IS NOT NULL AND sender_eigandi_id IS NULL) OR
---         (sender_orku_id IS NULL AND sender_eigandi_id IS NOT NULL)
---     )
--- );
-
-
-
-
-
-
-
-
 
 
 
