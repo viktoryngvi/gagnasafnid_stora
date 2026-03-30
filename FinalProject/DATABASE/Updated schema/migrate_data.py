@@ -7,10 +7,11 @@ from datetime import date
 fyrstdb = psycopg2.connect(
 host="localhost",
 port=5432,
-dbname="",   #Þurfið að breyta í ykkar gamla database
-user="postgres",    #þarf að vera ykkar username
-password=""    #Er ykkar password
-); print("Tengdist!")
+dbname="lokverksql",   #Þurfið að breyta í ykkar
+dbname="lokverksql",   #Þurfið að breyta í ykkar
+user="postgres",
+password="postgres"    #Er ykkar password
+); print("Connected!")
 
 fyrstdb.autocommit = True
 cur = fyrstdb.cursor()
@@ -20,10 +21,10 @@ cur.execute("CREATE DATABASE new_improved;")
 seconddb = psycopg2.connect(
 host="localhost",
 port=5432,
-dbname="new_improved",    #veljið þetta sem databaseinn ykkar!!!!!!!
-user="postgres",    #þarf að vera ykkar username
-password=""    #Er ykkar password
-); print("Það er verið að færa gögnin, hinkrið í augnablik")
+dbname="new_improved",
+user="postgres",
+password="postgres"    #Er ykkar password
+); print("Starting to run, wait a moment")
 
 sec = seconddb.cursor()
 
