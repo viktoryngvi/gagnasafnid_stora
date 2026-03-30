@@ -3,14 +3,14 @@
 -- 1. Query 
 SELECT 
     S.stadur "Power_Plant_Source",
-    EXTRACT(YEAR FROM M.timi) AS "Year",
-    EXTRACT(MONTH FROM M.timi) AS "Month",
+    EXTRACT(YEAR FROM G.timi) AS "Year",
+    EXTRACT(MONTH FROM G.timi) AS "Month",
     M.tegund_maelingar AS "Type",
     SUM(G.gildi_kwh) AS "Total_kWh"
 FROM gildin G
 JOIN maeling M ON M.ID = G.maeling_ID
 JOIN stod S on S.ID = M.stod_ID
-WHERE EXTRACT(YEAR FROM M.timi) = 2025
+WHERE EXTRACT(YEAR FROM G.timi) = 2025
 GROUP BY
     S.stadur,
     "Year",
