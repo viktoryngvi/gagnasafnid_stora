@@ -1,10 +1,5 @@
 -- Task C5
-
 -- 1. Query
-
--- Task C5
-
--- 1. Query 
 SELECT 
     S.stadur "Power_Plant_Source",
     EXTRACT(YEAR FROM G.timi) AS "Year",
