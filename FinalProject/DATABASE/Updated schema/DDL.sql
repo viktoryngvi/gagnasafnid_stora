@@ -1,18 +1,18 @@
 -- Task C3
 
 CREATE TABLE orku_stodvar_eigandi(    --stod er að ná í þetta
-    ID              PRIMARY KEY SERIAL,
-    heiti_eigandans VARCHAR,--eigandi í orku_einingar
+    ID              SERIAL PRIMARY KEY,
+    heiti_eigandans VARCHAR UNIQUE,--eigandi í orku_einingar
 );     --þetta er þjónustufyrirtækiðCREATE VIEW monthly_plant_loss_ratio AS
 
 CREATE TABLE hnit (
-    ID          PRIMARY KEY SERIAL,
+    ID          SERIAL PRIMARY KEY,
     X_HNIT      DOUBLE PRECISION,
     Y_HNIT      DOUBLE PRECISION
 );
 
 CREATE TABLE orku(
-    ID                  INT PRIMARY KEY SERIAL,
+    ID                  SERIAL PRIMARY KEY,
     stadur              VARCHAR NOT NULL UNIQUE,
     dagsetning_uppsett  DATE NOT NULL,
     hnit_id             INT NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE tengdar_stodvar (
 );
 
 CREATE TABLE notandi (
-    ID          PRIMARY KEY SERIAL,
+    ID          SERIAL PRIMARY KEY,
     hnit_id     INT,    --KEY
     stadsetning VARCHAR NOT NULL,   --heiti
     kennitala   VARCHAR NOT NULL UNIQUE,
@@ -51,22 +51,76 @@ CREATE TABLE notandi (
 
 
 CREATE TABLE maeling(
-    ID                  PRIMARY KEY SERIAL,
-    orku_ID             INT,
-    sendandi_maelingar  VARCHAR NOT NULL,
+    ID                  SERIAL PRIMARY KEY,
+    orku_ID             INT,    -- sendandi_maelingar 
+    sendandi_orku_id    INT,
+    sendandi_eigandi_id INT,
     tegund_maelingar    VARCHAR NOT NULL,
-    timi                TIMESTAMP NOT NULL,
-    FOREIGN KEY (orku_ID) REFERENCES orku(ID)
+    FOREIGN KEY (orku_ID) REFERENCES orku(ID),
+    FOREIGN KEY (sendandi_orku_id) REFERENCES orku(ID),
+    FOREIGN KEY (sendandi_eigandi_id) REFERENCES orku_stodvar_eigandi(ID),
+    sendandi VARCHAR GENERATED ALWAYS AS (
+        (CASE WHEN sendandi_orku_id IS NOT NULL THEN 's' || sendandi_orku_id
+        WHEN sendandi_eigandi_id IS NOT NULL THEN 'e' || sendandi_eigandi_id END)) STORED,
+    UNIQUE (orku_ID, sendandi, tegund_maelingar)
+
+    CONSTRAINT exclusive_sender CHECK (
+        (sendandi_orku_id IS NOT 0 AND sendandi_eigandi_id IS 0) OR
+        (sendandi_orku_id IS 0 AND sendandi_eigandi_id IS NOT 0))
 );
 
+
+
 CREATE TABLE gildin(
-    ID              PRIMARY KEY SERIAL,
+    ID              SERIAL PRIMARY KEY,
     maeling_ID      INT,
     notandi_ID      INT NULL,
     gildi_kwh       NUMERIC NOT NULL,
+    timi            TIMESTAMP NOT NULL,
     FOREIGN KEY (notandi_ID) REFERENCES notandi(ID)
     FOREIGN KEY (maeling_ID) REFERENCES maeling(ID)
 );
+
+
+
+
+SELECT *
+FROM orku_stodvar_eigandi
+LIMIT 10;
+
+SELECT *
+FROM gildin
+LIMIT 1000;
+
+SELECT *
+FROM maeling
+LIMIT 1000;
+
+
+SELECT 
+    CASE WHEN sendandi_orku_id IS NULL THEN 0 
+        ELSE sendandi_orku_id 
+    END
+FROM maeling;
+
+
+
+SELECT *
+FROM notandi
+LIMIT 100;
+
+SELECT *
+FROM tengdar_stodvar
+LIMIT 100;
+
+SELECT *
+FROM orku
+LIMIT 100;
+
+SELECT *
+FROM hnit
+LIMIT 100;
+
 
 
 -- Task D1
