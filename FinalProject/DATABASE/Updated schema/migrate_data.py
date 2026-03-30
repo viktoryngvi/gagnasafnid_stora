@@ -7,9 +7,9 @@ from datetime import date
 fyrstdb = psycopg2.connect(
 host="localhost",
 port=5432,
-dbname="orkuflaediisland",   #Þurfið að breyta í ykkar
+dbname="lokverksql",   #Þurfið að breyta í ykkar
 user="postgres",
-password="olgeir"    #Er ykkar password
+password="postgres"    #Er ykkar password
 ); print("Connected!")
 
 fyrstdb.autocommit = True
@@ -22,7 +22,7 @@ host="localhost",
 port=5432,
 dbname="new_improved",
 user="postgres",
-password="olgeir"    #Er ykkar password
+password="postgres"    #Er ykkar password
 ); print("Starting to run, wait a moment")
 
 sec = seconddb.cursor()
