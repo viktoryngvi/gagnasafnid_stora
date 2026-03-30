@@ -78,7 +78,7 @@ GROUP BY "Power_Plant_Source"
 ORDER BY "Power_Plant_Source"
 
 
-
+--Advanced task F (not finished)
 CREATE OR REPLACE VIEW substation_distances AS
 SELECT 
     t.STOD1, 
@@ -104,12 +104,12 @@ WITH measurement_totals AS (
     FROM gildin g
     JOIN maeling m ON g.maeling_ID = m.ID
     JOIN orku o ON m.orku_ID = o.ID
-    -- WHERE g.timi >= '2025-01-01' AND g.timi <= '2025-12-31'
+    WHERE g.timi >= '2025-01-01' AND g.timi <= '2025-12-31'
 ),
 distances AS (
     SELECT 
-        MAX(CASE WHEN STOD1 = 'S1_Krókur' AND STOD2 = 'S2_Rimakot' THEN dist_km END) as d12,
-        MAX(CASE WHEN STOD1 = 'S2_Rimakot' AND STOD2 = 'S3_Vestmannaeyjar' THEN dist_km END) as d23
+        MAX(CASE WHEN STOD1 = 'S1_Krókur' AND STOD2 = 'S2_Rimakot' THEN dist END) as d12,
+        MAX(CASE WHEN STOD1 = 'S2_Rimakot' AND STOD2 = 'S3_Vestmannaeyjar' THEN dist END) as d23
     FROM substation_distances
 ),
 calculations AS (
