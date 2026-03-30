@@ -8,6 +8,7 @@ fyrstdb = psycopg2.connect(
 host="localhost",
 port=5432,
 dbname="lokverksql",   #Þurfið að breyta í ykkar
+dbname="lokverksql",   #Þurfið að breyta í ykkar
 user="postgres",
 password="postgres"    #Er ykkar password
 ); print("Connected!")
