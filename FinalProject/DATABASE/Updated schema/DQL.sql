@@ -36,7 +36,7 @@ SELECT
 FROM gildin G
 JOIN maeling M ON M.ID = G.maeling_ID
 JOIN notandi N ON N.ID = G.notandi_ID
-JOIN orku S ON S.ID = M.stod_ID
+JOIN orku S ON S.ID = M.orku_ID
 WHERE EXTRACT(YEAR FROM G.timi) = 2025
 GROUP BY
     S.stadur,

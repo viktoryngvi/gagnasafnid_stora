@@ -124,3 +124,17 @@ LIMIT 100;
 
 
 -- Task D1
+
+
+-- Q1
+
+CREATE INDEX index_maeling_orku
+on maeling(orku_ID, tegund_maelingar);
+
+--Q2
+CREATE INDEX index_gildin_timi_maeling_notandi
+on gildin((EXTRACT(YEAR FROM timi)), maeling_ID, notandi_ID);
+
+--Q3
+CREATE INDEX index_gildin_maeling
+on gildin(maeling_ID);
