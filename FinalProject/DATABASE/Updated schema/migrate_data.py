@@ -102,10 +102,10 @@ print("Geggjað, vírusinn er kominn:)")
 
 
 
-# cur = fyrstdb.cursor()
-# cur.execute("SELECT * FROM raforka_legacy.orku_einingar LIMIT 10;")
-# for i in cur:
-#     print(i)
+cur = fyrstdb.cursor()
+cur.execute("SELECT * FROM raforka_legacy.notendur_skraning LIMIT 10;")
+for i in cur:
+    print(i)
 
 
 
