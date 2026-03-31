@@ -80,3 +80,106 @@ CREATE TABLE gildin(
 );
 
 -- Task D1
+DROP TRIGGER IF EXISTS CheckEnergyFlow ON gildin;
+DROP FUNCTION IF EXISTS CheckEnergyFlow();
+
+
+CREATE FUNCTION CheckEnergyFlow()
+RETURNS TRIGGER
+AS
+$$
+DECLARE
+	tOrkuID INT;
+	tTimi TIMESTAMP;
+
+	tFramleidsla NUMERIC;
+	tInnmotun NUMERIC;
+	tUttekt NUMERIC;
+
+	oldOrkuID INT;
+	oldTimi TIMESTAMP;
+BEGIN
+	IF (TG_OP = 'INSERT') THEN
+		SELECT M.orku_ID
+		INTO tOrkuID
+		FROM maeling M
+		WHERE M.ID = NEW.maeling_ID;
+
+		tTimi := NEW.timi;
+
+	ELSIF (TG_OP = 'DELETE') THEN
+		SELECT M.orku_ID
+		INTO tOrkuID
+		FROM maeling M
+		WHERE M.ID = OLD.maeling_ID;
+
+		tTimi := OLD.timi;
+
+	ELSIF (TG_OP = 'UPDATE') THEN
+		SELECT M.orku_ID
+		INTO tOrkuID
+		FROM maeling M
+		WHERE M.ID = NEW.maeling_ID;
+
+		tTimi := NEW.timi;
+
+		IF (OLD.maeling_ID <> NEW.maeling_ID OR OLD.timi <> NEW.timi) THEN
+			SELECT M.orku_ID
+			INTO oldOrkuID
+			FROM maeling M
+			WHERE M.ID = OLD.maeling_ID;
+
+			oldTimi := OLD.timi;
+
+			SELECT
+				COALESCE(SUM(CASE WHEN M.tegund_maelingar = 'Framleiðsla' THEN G.gildi_kwh ELSE 0 END), 0),
+				COALESCE(SUM(CASE WHEN M.tegund_maelingar = 'Innmötun' THEN G.gildi_kwh ELSE 0 END), 0),
+				COALESCE(SUM(CASE WHEN M.tegund_maelingar = 'Úttekt' THEN G.gildi_kwh ELSE 0 END), 0)
+			INTO tFramleidsla, tInnmotun, tUttekt
+			FROM gildin G
+			     JOIN maeling M ON M.ID = G.maeling_ID
+			WHERE M.orku_ID = oldOrkuID
+			  AND G.timi = oldTimi;
+
+			IF (tFramleidsla <= tInnmotun) THEN
+				RAISE EXCEPTION 'Function CheckEnergyFlow: Framleiðsla must be greater than Innmötun!' USING ERRCODE = '45000';
+			END IF;
+
+			IF (tInnmotun <= tUttekt) THEN
+				RAISE EXCEPTION 'Function CheckEnergyFlow: Innmötun must be greater than total Úttekt!' USING ERRCODE = '45000';
+			END IF;
+		END IF;
+	END IF;
+
+	SELECT
+		COALESCE(SUM(CASE WHEN M.tegund_maelingar = 'Framleiðsla' THEN G.gildi_kwh ELSE 0 END), 0),
+		COALESCE(SUM(CASE WHEN M.tegund_maelingar = 'Innmötun' THEN G.gildi_kwh ELSE 0 END), 0),
+		COALESCE(SUM(CASE WHEN M.tegund_maelingar = 'Úttekt' THEN G.gildi_kwh ELSE 0 END), 0)
+	INTO tFramleidsla, tInnmotun, tUttekt
+	FROM gildin G
+	     JOIN maeling M ON M.ID = G.maeling_ID
+	WHERE M.orku_ID = tOrkuID
+	  AND G.timi = tTimi;
+
+	IF (tFramleidsla <= tInnmotun) THEN
+		RAISE EXCEPTION 'Function CheckEnergyFlow: Framleiðsla must be greater than Innmötun!' USING ERRCODE = '45000';
+	END IF;
+
+	IF (tInnmotun <= tUttekt) THEN
+		RAISE EXCEPTION 'Function CheckEnergyFlow: Innmötun must be greater than Úttekt!' USING ERRCODE = '45000';
+	END IF;
+
+	IF (TG_OP = 'DELETE') THEN
+		RETURN OLD;
+	END IF;
+
+	RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE CONSTRAINT TRIGGER CheckEnergyFlow
+AFTER INSERT OR UPDATE OR DELETE
+ON gildin
+DEFERRABLE INITIALLY DEFERRED
+FOR EACH ROW EXECUTE PROCEDURE CheckEnergyFlow();
