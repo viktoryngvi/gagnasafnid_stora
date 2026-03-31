@@ -7,10 +7,9 @@ from datetime import date
 fyrstdb = psycopg2.connect(
 host="localhost",
 port=5432,
-dbname="lokverksql",   #Þurfið að breyta í ykkar
-dbname="lokverksql",   #Þurfið að breyta í ykkar
+dbname="final",   #Þurfið að breyta í ykkar
 user="postgres",
-password="postgres"    #Er ykkar password
+password="123"    #Er ykkar password
 ); print("Connected!")
 
 fyrstdb.autocommit = True
@@ -23,7 +22,7 @@ host="localhost",
 port=5432,
 dbname="new_improved",
 user="postgres",
-password="postgres"    #Er ykkar password
+password="123"    #Er ykkar password
 ); print("Starting to run, wait a moment")
 
 sec = seconddb.cursor()
@@ -80,8 +79,8 @@ with seconddb:
 
 cur.itersize = 20000
 cur.execute("SELECT * FROM raforka_legacy.orku_maelingar;")
-with seconddb:
-    for i in cur:
+for i in cur:
+    with seconddb:
         sec.execute("INSERT INTO maeling (orku_ID, sendandi_orku_id, sendandi_eigandi_id, tegund_maelingar)"
             "VALUES ((SELECT ID FROM orku WHERE stadur = %s), "
             "(SELECT ID FROM orku WHERE stadur = %s), "
@@ -100,20 +99,3 @@ with seconddb:
 
 
 print("Geggjað, vírusinn er kominn:)")
-
-
-
-# cur = fyrstdb.cursor()
-# cur.execute("SELECT * FROM raforka_legacy.orku_einingar LIMIT 10;")
-# for i in cur:
-#     print(i)
-
-
-
-
-
-
-cur = fyrstdb.cursor()
-cur.execute("SELECT * FROM raforka_legacy.orku_maelingar LIMIT 50;")
-for i in cur:
-    print(i)
