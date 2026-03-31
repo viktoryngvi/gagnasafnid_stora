@@ -8,9 +8,8 @@ fyrstdb = psycopg2.connect(
 host="localhost",
 port=5432,
 dbname="lokverksql",   #Þurfið að breyta í ykkar
-dbname="lokverksql",   #Þurfið að breyta í ykkar
 user="postgres",
-password="postgres"    #Er ykkar password
+password=""    #Er ykkar password
 ); print("Connected!")
 
 fyrstdb.autocommit = True
@@ -23,7 +22,7 @@ host="localhost",
 port=5432,
 dbname="new_improved",
 user="postgres",
-password="postgres"    #Er ykkar password
+password=""    #Er ykkar password
 ); print("Starting to run, wait a moment")
 
 sec = seconddb.cursor()
